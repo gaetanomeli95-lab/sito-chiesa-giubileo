@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import type { MaterialItem } from '@/lib/data-generated';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { cleanTitle, getCategoryLabel } from '@/lib/material-utils';
+import { cleanTitle, getCategoryLabel, getCategoryGradient } from '@/lib/material-utils';
 import { MaterialCard } from './material-card';
 import { MediaPlayer } from './media-player';
 
@@ -108,11 +108,14 @@ export function Materials({ initialMaterials, initialCategories }: MaterialsProp
     return picks.slice(0, 5);
   }, [allMaterials]);
 
-  /* Trending: first audio items (simulated) */
-  const trending = useMemo(
-    () => allMaterials.filter((m) => m.type === 'audio').slice(0, 8),
-    [allMaterials]
-  );
+  /* Category counts for browse cards */
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const item of allMaterials) {
+      counts[item.category] = (counts[item.category] || 0) + 1;
+    }
+    return counts;
+  }, [allMaterials]);
 
   /* Derived lists */
   const isSearching = debouncedSearch.length > 0;
@@ -168,12 +171,71 @@ export function Materials({ initialMaterials, initialCategories }: MaterialsProp
             Gratuitamente avete ricevuto, gratuitamente date
           </span>
           <h2 className="font-serif text-[clamp(2.2rem,5vw,3.5rem)] font-semibold leading-tight text-foreground mb-3">
-            Materiali
+            La raccolta
           </h2>
-          <p className="text-muted text-sm md:text-base">
-            {allMaterials.length} risorse disponibili · Ricerca istantanea
+          <p className="text-muted text-sm md:text-base max-w-xl mx-auto">
+            Più di mille materiali — prediche, musica, insegnamenti — condivisi senza misura dal 2006.
           </p>
         </div>
+
+        {/* ── Inizia da qui ── */}
+        {!isSearching && (
+          <div className="mb-14">
+            <div className="flex items-baseline justify-between mb-5">
+              <h3 className="text-sm font-medium uppercase tracking-wider text-muted">
+                Inizia da qui
+              </h3>
+              <span className="text-[11px] text-muted">Scelti dalla raccolta</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {featured.slice(0, 4).map((item, i) => (
+                <MaterialCard
+                  key={item.url}
+                  item={item}
+                  isFavorite={isFavorite(item)}
+                  onToggleFavorite={toggleFavorite}
+                  onPlay={handlePlay}
+                  index={i}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Esplora per categoria ── */}
+        {!isSearching && (
+          <div className="mb-14">
+            <h3 className="text-sm font-medium uppercase tracking-wider text-muted mb-5">
+              Esplora per categoria
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {categories.map((cat) => {
+                const count = categoryCounts[cat] || 0;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      setActiveCategory(cat);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`group relative overflow-hidden rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold ${getCategoryGradient(cat)}`}
+                    aria-label={`${getCategoryLabel(cat)}, ${count} materiali`}
+                  >
+                    <div className="relative z-10">
+                      <p className="text-[13px] font-semibold text-foreground group-hover:text-gold transition-colors">
+                        {getCategoryLabel(cat)}
+                      </p>
+                      <p className="text-[11px] text-muted mt-1">
+                        {count} {count === 1 ? 'materiale' : 'materiali'}
+                      </p>
+                    </div>
+                    <div className="absolute inset-0 bg-foreground/[0.02] group-hover:bg-foreground/[0.04] transition-colors" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* ── Search & Filters ── */}
         <div className="mb-10 md:mb-14 space-y-5">
@@ -325,27 +387,6 @@ export function Materials({ initialMaterials, initialCategories }: MaterialsProp
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
               {featured.map((item, i) => (
-                <MaterialCard
-                  key={item.url}
-                  item={item}
-                  isFavorite={isFavorite(item)}
-                  onToggleFavorite={toggleFavorite}
-                  onPlay={handlePlay}
-                  index={i}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── Trending ── */}
-        {!isSearching && (
-          <div className="mb-14">
-            <h3 className="text-sm font-medium uppercase tracking-wider text-muted mb-5">
-              Più ascoltati
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {trending.map((item, i) => (
                 <MaterialCard
                   key={item.url}
                   item={item}

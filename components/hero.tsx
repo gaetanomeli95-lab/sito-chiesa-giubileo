@@ -116,7 +116,7 @@ export function Hero() {
             variants={fadeUp}
             className="text-[11px] md:text-xs font-medium uppercase tracking-[0.16em] text-gold mb-5 md:mb-6"
           >
-            Corrado Salmè — Ministero del Vangelo
+            Corrado Salmè — Dal 2006
           </motion.p>
 
           {/* Main title */}
@@ -127,21 +127,23 @@ export function Hero() {
             Senza Misura
           </motion.h1>
 
-          {/* Subtitle */}
+          {/* Subtitle — generosity as the core thesis */}
           <motion.p
             variants={fadeUp}
-            className="text-white/75 text-[15px] md:text-lg leading-relaxed mb-8 md:mb-10 max-w-xl mx-auto"
+            className="text-white/80 text-[16px] md:text-lg leading-relaxed mb-8 md:mb-10 max-w-lg mx-auto"
           >
-            Predicazioni, musica e insegnamenti biblici gratuiti dal 2006
+            Ricevuto gratis. Dato gratis. Un archivio aperto di prediche,
+            musica e insegnamenti biblici — senza abbonamenti, senza paywall.
           </motion.p>
 
-          {/* Scripture */}
+          {/* Scripture — the theological anchor for the brand name */}
           <motion.blockquote
             variants={fadeUp}
             className="mb-10 md:mb-12 max-w-lg mx-auto"
           >
-            <p className="font-serif italic text-[clamp(1.05rem,2vw,1.3rem)] leading-[1.55] text-white/65">
-              «Perché colui che Dio ha mandato, proferisce le parole di Dio, perché Dio non dà lo Spirito con misura.»
+            <p className="font-serif italic text-[clamp(1.05rem,2vw,1.25rem)] leading-[1.6] text-white/60">
+              «Perché colui che Dio ha mandato, proferisce le parole di Dio:
+              perché Dio non dà lo Spirito con misura.»
             </p>
             <cite className="block mt-4 text-[11px] font-medium uppercase tracking-[0.12em] text-gold/90 not-italic">
               Giovanni 3:34
@@ -166,23 +168,23 @@ export function Hero() {
               >
                 <polygon points="5,3 19,12 5,21" />
               </svg>
-              Ascolta ora
+              Inizia ad ascoltare
             </a>
 
             <a
-              href="#materiali"
+              href="#storia"
               className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full border border-white/20 text-white/80 text-[12px] md:text-[13px] font-medium uppercase tracking-[0.08em] transition-all duration-300 hover:border-white/40 hover:text-white hover:bg-white/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             >
-              Esplora i materiali
+              Conosci la storia
             </a>
           </motion.div>
 
-          {/* Social proof line */}
+          {/* Honest social proof — no fake numbers */}
           <motion.p
             variants={fadeUp}
             className="mt-10 md:mt-12 text-[12px] md:text-[13px] text-white/40"
           >
-            1.234 materiali · 80.000+ download · Dal 2006
+            Dal 2006 · Accesso libero e gratuito
           </motion.p>
         </motion.div>
       </motion.div>
