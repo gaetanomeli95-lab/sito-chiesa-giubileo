@@ -43,16 +43,16 @@ export function Hero() {
           <Logo className="w-20 h-20 text-gold" />
         </div>
 
-        <h1 className="font-serif text-[clamp(2.6rem,6.5vw,5rem)] font-semibold leading-[1.05] tracking-tight text-foreground mb-5">
+        <h1 className="font-serif text-[clamp(2.6rem,6.5vw,5rem)] font-semibold leading-[1.05] tracking-tight text-white mb-5">
           Senza Misura
         </h1>
 
-        <p className="text-muted text-[15px] md:text-base tracking-[0.08em] uppercase font-medium mb-12">
+        <p className="text-white/90 text-[15px] md:text-base tracking-[0.08em] uppercase font-medium mb-12">
           Corrado Salmè — Predicazioni, Musica e Insegnamenti Biblici
         </p>
 
         <blockquote className="relative text-left md:text-center pl-5 md:pl-0 border-l-2 md:border-l-0 md:border-t-2 border-gold/60 pt-0 md:pt-8 mb-12 max-w-xl mx-auto">
-          <p className="font-serif italic text-[clamp(1.15rem,2.2vw,1.5rem)] leading-[1.5] text-foreground/90">
+          <p className="font-serif italic text-[clamp(1.15rem,2.2vw,1.5rem)] leading-[1.5] text-white/90">
             «Perché colui che Dio ha mandato, proferisce le parole di Dio, perché Dio non dà lo Spirito con misura.»
           </p>
           <cite className="block mt-5 text-[11px] font-semibold uppercase tracking-[0.15em] text-gold not-italic">
@@ -73,7 +73,7 @@ export function Hero() {
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
-        <span className="text-[10px] uppercase tracking-[0.2em] text-muted">Scorri</span>
+        <span className="text-[10px] uppercase tracking-[0.2em] text-white">Scorri</span>
         <div className="w-px h-10 bg-gradient-to-b from-gold to-transparent animate-scroll-line" />
       </div>
     </section>
