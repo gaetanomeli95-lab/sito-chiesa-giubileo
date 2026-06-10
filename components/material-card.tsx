@@ -9,6 +9,7 @@ import {
   formatDate,
   getCategoryLabel,
   getCategoryGradient,
+  getWixUrl,
 } from '@/lib/material-utils';
 import { cardItem, cardHover, playButtonHover, thumbnailHover } from '@/lib/motion';
 
@@ -16,7 +17,6 @@ interface MaterialCardProps {
   item: MaterialItem;
   isFavorite: boolean;
   onToggleFavorite: (item: MaterialItem) => void;
-  onPlay: (item: MaterialItem) => void;
   index?: number;
 }
 
@@ -39,7 +39,6 @@ export function MaterialCard({
   item,
   isFavorite,
   onToggleFavorite,
-  onPlay,
   index = 0,
 }: MaterialCardProps) {
   const title = cleanTitle(item.title);
@@ -47,7 +46,8 @@ export function MaterialCard({
   const dateStr = formatDate(date);
   const categoryLabel = getCategoryLabel(item.category);
   const gradient = getCategoryGradient(item.category);
-  const canPlay = item.type === 'audio' || item.type === 'video';
+  const wixUrl = getWixUrl(item.category);
+  const isMedia = item.type === 'audio' || item.type === 'video';
 
   return (
     <motion.article
@@ -66,21 +66,21 @@ export function MaterialCard({
           {typeIcons[item.type]}
         </motion.div>
 
-        {/* Hover overlay with play button */}
-        {canPlay && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <motion.button
-              onClick={() => onPlay(item)}
-              aria-label={`Riproduci ${title}`}
-              whileHover={playButtonHover}
-              whileTap={{ scale: 0.95 }}
-              className="w-14 h-14 rounded-full bg-gold/90 text-background flex items-center justify-center hover:bg-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-            >
+        {/* Hover overlay — external link to Wix */}
+        {isMedia && (
+          <a
+            href={wixUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Apri ${title} su SenzaMisura`}
+            className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          >
+            <span className="w-14 h-14 rounded-full bg-gold/90 text-background flex items-center justify-center hover:bg-gold">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <polygon points="7,4 19,12 7,20" />
               </svg>
-            </motion.button>
-          </div>
+            </span>
+          </a>
         )}
 
         {/* Type badge */}
@@ -138,31 +138,33 @@ export function MaterialCard({
         </p>
 
         <div className="mt-auto flex items-center justify-between gap-2">
-          {canPlay ? (
-            <button
-              onClick={() => onPlay(item)}
+          {isMedia ? (
+            <a
+              href={wixUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-gold hover:text-gold-light transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <polygon points="5,3 19,12 5,21" />
               </svg>
               {item.type === 'audio' ? 'Ascolta' : 'Guarda'}
-            </button>
+            </a>
           ) : (
             <a
-              href={item.url}
+              href={wixUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-gold hover:text-gold-light transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
-              Scarica
+              Apri su SenzaMisura
             </a>
           )}
 
-          {/* External link for all */}
+          {/* External link icon */}
           <a
-            href={item.url}
+            href={wixUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Apri ${title} in una nuova scheda`}

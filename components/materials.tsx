@@ -5,7 +5,6 @@ import type { MaterialItem } from '@/lib/data-generated';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { cleanTitle, getCategoryLabel, getCategoryGradient } from '@/lib/material-utils';
 import { MaterialCard } from './material-card';
-import { MediaPlayer } from './media-player';
 
 /* ── Types ── */
 interface MaterialsProps {
@@ -35,13 +34,6 @@ export function Materials({ initialMaterials, initialCategories }: MaterialsProp
   const [activeType, setActiveType] = useState<string>('all');
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_BATCH);
 
-  /* Media player */
-  const [playingMedia, setPlayingMedia] = useState<{
-    url: string;
-    type: 'audio' | 'video';
-    title: string;
-  } | null>(null);
-
   /* LocalStorage */
   const [favorites, setFavorites] = useLocalStorage<MaterialItem[]>('sm-favorites', []);
   const [recentlyViewed, setRecentlyViewed] = useLocalStorage<MaterialItem[]>('sm-recent', []);
@@ -66,17 +58,13 @@ export function Materials({ initialMaterials, initialCategories }: MaterialsProp
         e.preventDefault();
         searchRef.current?.focus();
       }
-      if (e.key === 'Escape') {
-        if (playingMedia) {
-          setPlayingMedia(null);
-        } else if (searchRaw) {
-          setSearchRaw('');
-        }
+      if (e.key === 'Escape' && searchRaw) {
+        setSearchRaw('');
       }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [playingMedia, searchRaw]);
+  }, [searchRaw]);
 
   /* Filter logic */
   const filtered = useMemo(() => {
@@ -139,20 +127,13 @@ export function Materials({ initialMaterials, initialCategories }: MaterialsProp
     [favorites]
   );
 
-  const handlePlay = useCallback(
+  const handleView = useCallback(
     (item: MaterialItem) => {
-      if (item.type === 'audio' || item.type === 'video') {
-        setPlayingMedia({
-          url: item.url,
-          type: item.type,
-          title: cleanTitle(item.title),
-        });
-        /* Add to recently viewed (dedupe + limit 10) */
-        setRecentlyViewed((prev) => {
-          const next = prev.filter((r) => r.url !== item.url);
-          return [item, ...next].slice(0, 10);
-        });
-      }
+      /* Add to recently viewed (dedupe + limit 10) */
+      setRecentlyViewed((prev) => {
+        const next = prev.filter((r) => r.url !== item.url);
+        return [item, ...next].slice(0, 10);
+      });
     },
     [setRecentlyViewed]
   );

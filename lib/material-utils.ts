@@ -1,5 +1,24 @@
 import type { MaterialItem } from './data-generated';
 
+const WIX_BASE = 'https://adoratore.wixsite.com/senzamisura';
+
+/** Maps a material category to the corresponding Wix page URL */
+export function getWixUrl(category: string): string {
+  const map: Record<string, string> = {
+    Musica: `${WIX_BASE}/musica`,
+    Lezioni_iChurch: `${WIX_BASE}/ichurch`,
+  };
+  // Predicazioni 2014–2019 have dedicated pages on Wix
+  if (category.startsWith('Predicazioni_')) {
+    const year = category.replace('Predicazioni_', '');
+    const y = parseInt(year, 10);
+    if (y >= 2014 && y <= 2019) {
+      return `${WIX_BASE}/predicazioni-${year}`;
+    }
+  }
+  return map[category] || `${WIX_BASE}/predicazioni`;
+}
+
 /** Decodes URL-encoded characters in a material title */
 export function decodeTitle(raw: string): string {
   try {
