@@ -46,7 +46,10 @@ const milestones = [
 /* ── Variants ── */
 const lineGrow = {
   hidden: { scaleY: 0 },
-  visible: { scaleY: 1, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } },
+  visible: {
+    scaleY: 1,
+    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as const },
+  },
 };
 
 const fadeIn = {
@@ -54,7 +57,7 @@ const fadeIn = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
   },
 };
 
@@ -63,7 +66,7 @@ const yearReveal = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const },
   },
 };
 
