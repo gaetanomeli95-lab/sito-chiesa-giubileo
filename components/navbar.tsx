@@ -21,6 +21,16 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && menuOpen) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [menuOpen]);
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -52,8 +62,10 @@ export function Navbar() {
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden relative w-8 h-8 flex flex-col justify-center items-center gap-[5px]"
-            aria-label="Menu"
+            className="md:hidden relative w-8 h-8 flex flex-col justify-center items-center gap-[5px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            aria-label={menuOpen ? 'Chiudi menu' : 'Apri menu'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
           >
             <span
               className={`block w-5 h-px transition-all duration-300 ${scrolled ? 'bg-foreground' : 'bg-white'} ${
@@ -75,6 +87,7 @@ export function Navbar() {
       </div>
 
       <div
+        id="mobile-menu"
         className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border transition-all duration-500 overflow-hidden ${
           menuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}
