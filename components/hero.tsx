@@ -33,8 +33,8 @@ export function Hero() {
           }`}
           style={{ backgroundImage: `url(${img})` }}
         >
-          {/* Light overlay + gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-background/80" />
+          {/* Dark overlay + gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
         </div>
       ))}
 
