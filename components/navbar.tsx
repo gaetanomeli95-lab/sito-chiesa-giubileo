@@ -33,7 +33,7 @@ export function Navbar() {
         <nav className="flex items-center justify-between h-16 lg:h-20">
           <a href="#" className="flex items-center gap-3 group">
             <Logo className="w-8 h-8 text-gold transition-transform duration-300 group-hover:scale-105" />
-            <LogoText className="text-lg text-foreground" />
+            <LogoText className={`text-lg transition-colors duration-300 ${scrolled ? 'text-foreground' : 'text-white'}`} />
           </a>
 
           <ul className="hidden md:flex items-center gap-10">
@@ -41,7 +41,7 @@ export function Navbar() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="relative text-[13px] font-medium uppercase tracking-[0.12em] text-muted transition-colors duration-300 hover:text-foreground group/link"
+                  className={`relative text-[13px] font-medium uppercase tracking-[0.12em] transition-colors duration-300 group/link ${scrolled ? 'text-muted hover:text-foreground' : 'text-white/90 hover:text-white'}`}
                 >
                   {link.label}
                   <span className="absolute -bottom-1 left-0 w-0 h-px bg-gold transition-all duration-300 group-hover/link:w-full" />
@@ -56,17 +56,17 @@ export function Navbar() {
             aria-label="Menu"
           >
             <span
-              className={`block w-5 h-px bg-foreground transition-all duration-300 ${
+              className={`block w-5 h-px transition-all duration-300 ${scrolled ? 'bg-foreground' : 'bg-white'} ${
                 menuOpen ? 'rotate-45 translate-y-[3px]' : ''
               }`}
             />
             <span
-              className={`block w-5 h-px bg-foreground transition-all duration-300 ${
+              className={`block w-5 h-px transition-all duration-300 ${scrolled ? 'bg-foreground' : 'bg-white'} ${
                 menuOpen ? 'opacity-0' : ''
               }`}
             />
             <span
-              className={`block w-5 h-px bg-foreground transition-all duration-300 ${
+              className={`block w-5 h-px transition-all duration-300 ${scrolled ? 'bg-foreground' : 'bg-white'} ${
                 menuOpen ? '-rotate-45 -translate-y-[3px]' : ''
               }`}
             />
