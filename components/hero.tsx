@@ -1,16 +1,43 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Logo } from './logo';
 
+const heroImages = [
+  '/hero/hero-0.jpg',
+  '/hero/hero-1.jpg',
+  '/hero/hero-2.jpg',
+  '/hero/hero-3.jpg',
+  '/hero/hero-4.jpg',
+  '/hero/hero-5.jpg',
+  '/hero/hero-6.jpg',
+];
+
 export function Hero() {
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
-      {/* Subtle radial glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(200,169,110,0.07) 0%, transparent 60%), radial-gradient(ellipse 50% 30% at 50% 100%, rgba(200,169,110,0.03) 0%, transparent 50%)',
-        }}
-      />
+      {/* Background image slideshow with fade */}
+      {heroImages.map((img, i) => (
+        <div
+          key={img}
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
+            i === currentImage ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ backgroundImage: `url(${img})` }}
+        >
+          {/* Dark overlay + gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/75 to-background/90" />
+        </div>
+      ))}
 
       <div className="relative z-10 max-w-3xl mx-auto animate-fade-in">
         <div className="mb-8 flex justify-center">
