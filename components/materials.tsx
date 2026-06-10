@@ -66,11 +66,28 @@ export function Materials({ initialMaterials, initialCategories }: MaterialsProp
     setPage(1);
   }, [search, selectedCategory, selectedType]);
 
+  const totalPages = Math.ceil(filteredMaterials.length / ITEMS_PER_PAGE) || 1;
+
   const paginatedMaterials = useMemo(() => {
-    return filteredMaterials.slice(0, page * ITEMS_PER_PAGE);
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    return filteredMaterials.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredMaterials, page]);
 
-  const hasMore = paginatedMaterials.length < filteredMaterials.length;
+  const goToPage = (p: number) => {
+    if (p >= 1 && p <= totalPages) {
+      setPage(p);
+      document.getElementById('materiali')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') goToPage(page + 1);
+      if (e.key === 'ArrowLeft') goToPage(page - 1);
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [page, totalPages]);
 
   return (
     <section id="materiali" className="relative py-28 md:py-36">
@@ -184,19 +201,60 @@ export function Materials({ initialMaterials, initialCategories }: MaterialsProp
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-3 mt-4">
-            {paginatedMaterials.length > 0 && (
-              <p className="text-center text-[12px] text-muted">
-                Mostrati {paginatedMaterials.length} di {filteredMaterials.length} materiali
-              </p>
-            )}
-            {hasMore && (
-              <button
-                onClick={() => setPage((p) => p + 1)}
-                className="px-5 py-2 rounded-lg border border-border text-sm font-medium text-muted hover:text-foreground hover:border-gold/40 transition-colors"
-              >
-                Carica altri {ITEMS_PER_PAGE}
-              </button>
+          <div className="flex flex-col items-center gap-4 mt-6">
+            <p className="text-center text-[12px] text-muted">
+              {filteredMaterials.length > 0
+                ? `Mostrati ${paginatedMaterials.length} di ${filteredMaterials.length} materiali — Pagina ${page} di ${totalPages}`
+                : 'Nessun risultato'}
+            </p>
+
+            {/* aria-live region per screen reader */}
+            <div aria-live="polite" aria-atomic="true" className="sr-only">
+              Pagina {page} di {totalPages}, {paginatedMaterials.length} materiali mostrati
+            </div>
+
+            {totalPages > 1 && (
+              <nav aria-label="Paginazione materiali" className="flex items-center gap-2">
+                <button
+                  onClick={() => goToPage(page - 1)}
+                  disabled={page === 1}
+                  aria-label="Pagina precedente"
+                  className="px-3 py-1.5 rounded-md border border-border text-sm font-medium text-muted hover:text-foreground hover:border-gold/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  ←
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                  .map((p, idx, arr) => (
+                    <span key={p} className="flex items-center gap-2">
+                      {idx > 0 && arr[idx - 1] !== p - 1 && (
+                        <span className="text-muted text-sm px-1">…</span>
+                      )}
+                      <button
+                        onClick={() => goToPage(p)}
+                        aria-label={`Vai a pagina ${p}`}
+                        aria-current={p === page ? 'page' : undefined}
+                        className={`w-8 h-8 rounded-md text-sm font-medium transition-colors ${
+                          p === page
+                            ? 'bg-gold text-background'
+                            : 'border border-border text-muted hover:text-foreground hover:border-gold/40'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    </span>
+                  ))}
+
+                <button
+                  onClick={() => goToPage(page + 1)}
+                  disabled={page === totalPages}
+                  aria-label="Pagina successiva"
+                  className="px-3 py-1.5 rounded-md border border-border text-sm font-medium text-muted hover:text-foreground hover:border-gold/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  →
+                </button>
+              </nav>
             )}
           </div>
         </SectionReveal>
