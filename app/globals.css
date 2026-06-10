@@ -13,29 +13,29 @@
   }
 
   body {
-    background: #0C0C0C;
-    color: #F2F0EB;
+    background: #FAFAF8;
+    color: #1A1A1A;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background: #C8A96E;
-    color: #0C0C0C;
+    background: #B8860B;
+    color: #FAFAF8;
   }
 
   ::-webkit-scrollbar {
     width: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #0C0C0C;
+    background: #F5F5F3;
   }
   ::-webkit-scrollbar-thumb {
-    background: #2A2A24;
+    background: #D4D4D0;
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3A3A34;
+    background: #B8B8B4;
   }
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Logo } from './logo';
 
 const heroImages = [
@@ -28,11 +29,18 @@ export function Hero() {
       {heroImages.map((img, i) => (
         <div
           key={img}
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
             i === currentImage ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{ backgroundImage: `url(${img})` }}
         >
+          <Image
+            src={img}
+            alt={`Senza Misura - immagine ${i + 1}`}
+            fill
+            className="object-cover"
+            priority={i === 0}
+            sizes="100vw"
+          />
           {/* Dark overlay + gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
         </div>

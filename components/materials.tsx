@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { SectionReveal } from './ui/section-reveal';
 import { MediaPlayer } from './media-player';
-import { allMaterials, materialsByCategory } from '@/lib/data-generated';
+
+interface MaterialItem {
+  type: 'audio' | 'video' | 'pdf' | 'doc';
+  title: string;
+  url: string;
+  category: string;
+}
 
 const icons: Record<string, React.ReactNode> = {
   audio: (
@@ -31,13 +37,21 @@ const categoryLabels: Record<string, string> = {
   'Lezioni_iChurch': 'Lezioni iChurch',
 };
 
-export function Materials() {
+const ITEMS_PER_PAGE = 50;
+
+interface MaterialsProps {
+  initialMaterials: MaterialItem[];
+  initialCategories: string[];
+}
+
+export function Materials({ initialMaterials, initialCategories }: MaterialsProps) {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [playingMedia, setPlayingMedia] = useState<{ url: string; type: 'audio' | 'video'; title: string } | null>(null);
-
-  const categories = Object.keys(materialsByCategory);
+  const [allMaterials] = useState<MaterialItem[]>(initialMaterials);
+  const [categories] = useState<string[]>(initialCategories);
+  const [page, setPage] = useState(1);
 
   const filteredMaterials = useMemo(() => {
     return allMaterials.filter(item => {
@@ -46,7 +60,17 @@ export function Materials() {
       const matchesType = selectedType === 'all' || item.type === selectedType;
       return matchesSearch && matchesCategory && matchesType;
     });
+  }, [allMaterials, search, selectedCategory, selectedType]);
+
+  useEffect(() => {
+    setPage(1);
   }, [search, selectedCategory, selectedType]);
+
+  const paginatedMaterials = useMemo(() => {
+    return filteredMaterials.slice(0, page * ITEMS_PER_PAGE);
+  }, [filteredMaterials, page]);
+
+  const hasMore = paginatedMaterials.length < filteredMaterials.length;
 
   return (
     <section id="materiali" className="relative py-28 md:py-36">
@@ -110,12 +134,12 @@ export function Materials() {
             </div>
 
             <div className="divide-y divide-border max-h-[600px] overflow-y-auto">
-              {filteredMaterials.length === 0 ? (
+              {paginatedMaterials.length === 0 ? (
                 <div className="px-6 py-12 text-center text-muted">
                   Nessun risultato trovato
                 </div>
               ) : (
-                filteredMaterials.map((item, i) => (
+                paginatedMaterials.map((item, i) => (
                   <div
                     key={`${item.category}-${i}`}
                     className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-surface/50 transition-colors"
@@ -160,11 +184,21 @@ export function Materials() {
             </div>
           </div>
 
-          {filteredMaterials.length > 0 && (
-            <p className="text-center text-[12px] text-muted mt-4">
-              Mostrati {filteredMaterials.length} di {allMaterials.length} materiali
-            </p>
-          )}
+          <div className="flex flex-col items-center gap-3 mt-4">
+            {paginatedMaterials.length > 0 && (
+              <p className="text-center text-[12px] text-muted">
+                Mostrati {paginatedMaterials.length} di {filteredMaterials.length} materiali
+              </p>
+            )}
+            {hasMore && (
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                className="px-5 py-2 rounded-lg border border-border text-sm font-medium text-muted hover:text-foreground hover:border-gold/40 transition-colors"
+              >
+                Carica altri {ITEMS_PER_PAGE}
+              </button>
+            )}
+          </div>
         </SectionReveal>
 
         {playingMedia && (
