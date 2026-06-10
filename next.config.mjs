@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  basePath: process.env.NODE_ENV === 'production' ? '/sito-chiesa-giubileo' : '',
+  basePath: '/sito-chiesa-giubileo',
   images: { unoptimized: true },
   trailingSlash: true,
 };
