@@ -1,89 +1,223 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useRef } from 'react';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+} from 'framer-motion';
 import Image from 'next/image';
-import { Logo } from './logo';
 
-const heroImages = [
-  '/hero/hero-0.jpg',
-  '/hero/hero-1.jpg',
-  '/hero/hero-2.jpg',
-  '/hero/hero-3.jpg',
-  '/hero/hero-4.jpg',
-  '/hero/hero-5.jpg',
-];
+/* ─── Staggered reveal variants ─── */
+const container = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.4,
+    },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.9,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
 
 export function Hero() {
-  const [currentImage, setCurrentImage] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+
+  /* Parallax transforms — disabled when reduced-motion is preferred */
+  const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
+  const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '12%']);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.6], [0.5, 0.85]);
+
+  const parallaxImageY = prefersReducedMotion ? 0 : imageY;
+  const parallaxContentY = prefersReducedMotion ? 0 : contentY;
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
-      {/* Background image slideshow with fade */}
-      {heroImages.map((img, i) => (
-        <div
-          key={img}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            i === currentImage ? 'opacity-100' : 'opacity-0'
-          }`}
+    <section
+      ref={sectionRef}
+      className="relative h-[100dvh] overflow-hidden"
+    >
+      {/* ── Background image with parallax ── */}
+      <motion.div
+        className="absolute inset-0"
+        style={{ y: parallaxImageY }}
+      >
+        <motion.div
+          className="absolute inset-[-8%]"
+          initial={{ scale: 1 }}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : { scale: 1.06 }
+          }
+          transition={
+            prefersReducedMotion
+              ? {}
+              : {
+                  duration: 20,
+                  ease: 'linear',
+                  repeat: Infinity,
+                  repeatType: 'reverse',
+                }
+          }
         >
           <Image
-            src={img}
-            alt={`Senza Misura - immagine ${i + 1}`}
+            src="/hero/hero-4.jpg"
+            alt="Senza Misura — Un ministero di grazia senza confini"
             fill
             className="object-cover"
-            priority={i === 0}
+            priority
             sizes="100vw"
+            quality={85}
           />
-          {/* Dark overlay + gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
-        </div>
-      ))}
+        </motion.div>
+      </motion.div>
 
-      <div className="relative z-10 max-w-3xl mx-auto animate-fade-in">
-        <div className="mb-8 flex justify-center">
-          <Logo className="w-20 h-20 text-gold" />
-        </div>
+      {/* ── Cinematic overlay ── */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{ opacity: overlayOpacity }}
+      >
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.35)_100%)]" />
+      </motion.div>
 
-        <h1 className="font-serif text-[clamp(2.6rem,6.5vw,5rem)] font-semibold leading-[1.05] tracking-tight text-white mb-5">
-          Senza Misura
-        </h1>
-
-        <p className="text-white/90 text-[15px] md:text-base tracking-[0.08em] uppercase font-medium mb-12">
-          Corrado Salmè — Predicazioni, Musica e Insegnamenti Biblici
-        </p>
-
-        <blockquote className="relative text-left md:text-center pl-5 md:pl-0 border-l-2 md:border-l-0 md:border-t-2 border-gold/60 pt-0 md:pt-8 mb-12 max-w-xl mx-auto">
-          <p className="font-serif italic text-[clamp(1.15rem,2.2vw,1.5rem)] leading-[1.5] text-white/90">
-            «Perché colui che Dio ha mandato, proferisce le parole di Dio, perché Dio non dà lo Spirito con misura.»
-          </p>
-          <cite className="block mt-5 text-[11px] font-semibold uppercase tracking-[0.15em] text-gold not-italic">
-            Giovanni 3:34
-          </cite>
-        </blockquote>
-
-        <a
-          href="#materiali"
-          className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-gold/40 text-gold text-[13px] font-semibold uppercase tracking-[0.08em] transition-all duration-500 hover:bg-gold hover:text-background hover:shadow-[0_0_40px_rgba(200,169,110,0.18)] hover:border-gold"
+      {/* ── Content ── */}
+      <motion.div
+        className="relative z-10 h-full flex flex-col items-center justify-center px-6 md:px-8"
+        style={{ y: parallaxContentY }}
+      >
+        <motion.div
+          className="max-w-[52rem] mx-auto text-center"
+          variants={container}
+          initial="hidden"
+          animate="visible"
         >
-          Esplora i materiali
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M7 17l9.2-9.2M17 17V8H8" />
-          </svg>
-        </a>
-      </div>
+          {/* Overline */}
+          <motion.p
+            variants={fadeUp}
+            className="text-[11px] md:text-xs font-medium uppercase tracking-[0.16em] text-gold mb-5 md:mb-6"
+          >
+            Corrado Salmè — Ministero del Vangelo
+          </motion.p>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
-        <span className="text-[10px] uppercase tracking-[0.2em] text-white">Scorri</span>
-        <div className="w-px h-10 bg-gradient-to-b from-gold to-transparent animate-scroll-line" />
-      </div>
+          {/* Main title */}
+          <motion.h1
+            variants={fadeUp}
+            className="font-serif text-[clamp(3.2rem,9vw,7rem)] font-semibold leading-[0.95] tracking-[-0.02em] text-white mb-5 md:mb-6"
+          >
+            Senza Misura
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            variants={fadeUp}
+            className="text-white/75 text-[15px] md:text-lg leading-relaxed mb-8 md:mb-10 max-w-xl mx-auto"
+          >
+            Predicazioni, musica e insegnamenti biblici gratuiti dal 2006
+          </motion.p>
+
+          {/* Scripture */}
+          <motion.blockquote
+            variants={fadeUp}
+            className="mb-10 md:mb-12 max-w-lg mx-auto"
+          >
+            <p className="font-serif italic text-[clamp(1.05rem,2vw,1.3rem)] leading-[1.55] text-white/65">
+              «Perché colui che Dio ha mandato, proferisce le parole di Dio, perché Dio non dà lo Spirito con misura.»
+            </p>
+            <cite className="block mt-4 text-[11px] font-medium uppercase tracking-[0.12em] text-gold/90 not-italic">
+              Giovanni 3:34
+            </cite>
+          </motion.blockquote>
+
+          {/* CTAs */}
+          <motion.div
+            variants={fadeUp}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
+          >
+            <a
+              href="#materiali"
+              className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-gold text-background text-[12px] md:text-[13px] font-semibold uppercase tracking-[0.08em] transition-all duration-300 hover:bg-gold-light hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <polygon points="5,3 19,12 5,21" />
+              </svg>
+              Ascolta ora
+            </a>
+
+            <a
+              href="#materiali"
+              className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full border border-white/20 text-white/80 text-[12px] md:text-[13px] font-medium uppercase tracking-[0.08em] transition-all duration-300 hover:border-white/40 hover:text-white hover:bg-white/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            >
+              Esplora i materiali
+            </a>
+          </motion.div>
+
+          {/* Social proof line */}
+          <motion.p
+            variants={fadeUp}
+            className="mt-10 md:mt-12 text-[12px] md:text-[13px] text-white/40"
+          >
+            1.234 materiali · 80.000+ download · Dal 2006
+          </motion.p>
+        </motion.div>
+      </motion.div>
+
+      {/* ── Scroll indicator ── */}
+      <motion.div
+        className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2.5"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{
+          delay: 2.2,
+          duration: 1.2,
+          ease: [0.16, 1, 0.3, 1] as const,
+        }}
+      >
+        <span className="text-[10px] uppercase tracking-[0.2em] text-white/30">
+          Scorri
+        </span>
+        <motion.div
+          className="w-px h-6 md:h-8 bg-gradient-to-b from-gold/50 to-transparent"
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  scaleY: [0.5, 1, 0.5],
+                  opacity: [0.4, 0.8, 0.4],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? {}
+              : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }
+          }
+        />
+      </motion.div>
     </section>
   );
 }
