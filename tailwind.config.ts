@@ -8,19 +8,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#0C0C0C',
-        surface: '#111111',
-        'surface-elevated': '#161616',
-        border: 'rgba(255,255,255,0.06)',
-        'border-strong': 'rgba(255,255,255,0.10)',
-        foreground: '#F2F0EB',
-        muted: '#8A8A80',
-        'muted-light': '#A0A098',
+        background: '#FAFAF8',
+        surface: '#FFFFFF',
+        'surface-elevated': '#F5F5F3',
+        border: 'rgba(0,0,0,0.08)',
+        'border-strong': 'rgba(0,0,0,0.12)',
+        foreground: '#1A1A1A',
+        muted: '#6B6B6B',
+        'muted-light': '#8A8A8A',
         gold: {
-          DEFAULT: '#C8A96E',
-          light: '#E0C99A',
-          dark: '#8B7340',
-          muted: 'rgba(200,169,110,0.08)',
+          DEFAULT: '#B8860B',
+          light: '#D4A830',
+          dark: '#8B6914',
+          muted: 'rgba(184,134,11,0.10)',
         },
       },
       fontFamily: {

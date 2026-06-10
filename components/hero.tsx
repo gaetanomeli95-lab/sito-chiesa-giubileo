@@ -10,7 +10,6 @@ const heroImages = [
   '/hero/hero-3.jpg',
   '/hero/hero-4.jpg',
   '/hero/hero-5.jpg',
-  '/hero/hero-6.jpg',
 ];
 
 export function Hero() {
@@ -34,8 +33,8 @@ export function Hero() {
           }`}
           style={{ backgroundImage: `url(${img})` }}
         >
-          {/* Dark overlay + gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/50" />
+          {/* Light overlay + gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-background/80" />
         </div>
       ))}
 

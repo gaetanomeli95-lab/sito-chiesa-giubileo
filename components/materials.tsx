@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { SectionReveal } from './ui/section-reveal';
+import { MediaPlayer } from './media-player';
 import { allMaterials, materialsByCategory } from '@/lib/data-generated';
 
 const icons: Record<string, React.ReactNode> = {
@@ -34,6 +35,7 @@ export function Materials() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
+  const [playingMedia, setPlayingMedia] = useState<{ url: string; type: 'audio' | 'video'; title: string } | null>(null);
 
   const categories = Object.keys(materialsByCategory);
 
@@ -132,15 +134,25 @@ export function Materials() {
                       </span>
                     </div>
                     <div className="col-span-2 md:col-span-2 text-right">
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-gold hover:text-gold-light transition-colors"
-                      >
-                        {item.type.toUpperCase()}
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
-                      </a>
+                      {(item.type === 'audio' || item.type === 'video') ? (
+                        <button
+                          onClick={() => setPlayingMedia({ url: item.url, type: item.type as 'audio' | 'video', title: item.title })}
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-gold hover:text-gold-light transition-colors"
+                        >
+                          {item.type === 'audio' ? 'Ascolta' : 'Guarda'}
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
+                        </button>
+                      ) : (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-gold hover:text-gold-light transition-colors"
+                        >
+                          {item.type.toUpperCase()}
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))
@@ -154,6 +166,15 @@ export function Materials() {
             </p>
           )}
         </SectionReveal>
+
+        {playingMedia && (
+          <MediaPlayer
+            url={playingMedia.url}
+            type={playingMedia.type}
+            title={playingMedia.title}
+            onClose={() => setPlayingMedia(null)}
+          />
+        )}
       </div>
     </section>
   );
