@@ -76,8 +76,8 @@ allMaterials.forEach(item => {
   categories[item.category].push(item);
 });
 
-// Generate TypeScript
-let tsContent = `// Auto-generated from scraped HTML files
+// Generate TypeScript with JSON for proper escaping
+const tsContent = `// Auto-generated from scraped HTML files
 export interface MaterialItem {
   type: 'audio' | 'video' | 'pdf' | 'doc';
   title: string;
@@ -85,23 +85,11 @@ export interface MaterialItem {
   category: string;
 }
 
-export const allMaterials: MaterialItem[] = [
-`;
-
-allMaterials.forEach(item => {
-  tsContent += `  { type: '${item.type}', title: '${item.title.replace(/'/g, "\\'")}', url: '${item.url}', category: '${item.category}' },\n`;
-});
-
-tsContent += `];
+export const allMaterials: MaterialItem[] = ${JSON.stringify(allMaterials, null, 2)};
 
 export const materialsByCategory: Record<string, MaterialItem[]> = {
-`;
-
-Object.keys(categories).forEach(cat => {
-  tsContent += `  '${cat}': allMaterials.filter(m => m.category === '${cat}'),\n`;
-});
-
-tsContent += `};
+${Object.keys(categories).map(cat => `  '${cat}': allMaterials.filter(m => m.category === '${cat}'),`).join('\n')}
+};
 `;
 
 fs.writeFileSync(outputFile, tsContent);
